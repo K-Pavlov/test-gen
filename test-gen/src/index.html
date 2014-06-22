@@ -5,12 +5,14 @@
 </head>
 <body>
     <button id="easy-test">Generate easy test</button>
+    <button id="medium-test">Generate moderate test</button>
+    <button id="hard-test">Generate hard test</button>
     <script id="template" type="text/x-handlebars-template">
         <table style=" margin-left: auto; margin-right: auto;">
             {{#each tasks}}
             {{#if this.addTr}}
             <tr>
-            {{/if}}
+                {{/if}}
                 <td style="border: 1px solid black; min-height:200px ; min-width: 200px">
                     {{{this.lastVar.variable}}} = ?                  .......<br />
                     {{#each this.variables}}
@@ -18,7 +20,7 @@
                     {{/each}}
                     {{expression}}
                 </td>
-         {{/each}}
+                {{/each}}
         </table>
     </script>
     <script src="scripts/random-generation.js"></script>
@@ -33,6 +35,26 @@
     </script>
     <script src="libs/jQuery1.11.1.js"></script>
     <script src="scripts/simple-test-gen.js"></script>
+    <script>
+        var easyButton = document.getElementById('easy-test');
+        var mediumButton = document.getElementById('medium-test');
+        var hardButton = document.getElementById('hard-test');
+
+        easyButton.addEventListener('click', function () {
+            easyTaskOneTwo(1);
+        }, false);
+
+        mediumButton.addEventListener('click', function () {
+            easyTaskOneTwo(2);
+        }, false);
+
+        hardButton.addEventListener('click', function () {
+            easyTaskOneTwo(3);
+        }, false);
+    </script>
+    <div id="output">
+
+    </div>
 </body>
 </html>
 

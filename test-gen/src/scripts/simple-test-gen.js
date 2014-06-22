@@ -3,22 +3,21 @@
 /// <reference path="random-generation.js" />
 //var tasks = [];
 
-function easyTaskOneTwo() {
+function easyTaskOneTwo(difficulty) {
     var templateNode = document.getElementById('template');
     var templateString = templateNode.innerHTML;
     var template = Handlebars.compile(templateString);
     var tasks = [];
-    var difficulty = 1;
     for (var i = 1; i <= 5; i++) {
-        tasks.push(createTaskFirstFive(i, 3));
+        tasks.push(createTaskFirstFive(i, difficulty));
     }
 
     for (var i = 6; i <= 7; i++) {
-        tasks.push(createTaskSixSeven(i, 3));
+        tasks.push(createTaskSixSeven(i, difficulty));
     }
 
     for (var i = 8; i <= 10; i++) {
-        tasks.push(createTaskEightTen(i, 3));
+        tasks.push(createTaskEightTen(i, difficulty));
     }
 
     // var task = createTaskFirstSix(2, 1, 3);
@@ -26,11 +25,7 @@ function easyTaskOneTwo() {
         tasks: tasks
     });
 
-    for (var i in tasks) {
-        console.log(tasks[i].addTr);
-    }
-
-    document.body.innerHTML += taskOneHtml;
+    document.getElementById('output').innerHTML = taskOneHtml;
 }
 
 //All task in easy to template way
@@ -289,4 +284,4 @@ function checkTaskNumber(taskNumber) {
     }
 }
 
-easyTaskOneTwo();
+//easyTaskOneTwo();
