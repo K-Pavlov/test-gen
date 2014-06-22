@@ -10,7 +10,7 @@ function easyTaskOneTwo() {
     var tasks = [];
     var difficulty = 1;
     for (var i = 1; i <= 5; i++) {
-        tasks.push(createTaskFirstSix(2, i, 3));
+        tasks.push(createTaskFirstSix(2, i, 1));
     }
     // var task = createTaskFirstSix(2, 1, 3);
     var taskOneHtml = template({
@@ -19,6 +19,7 @@ function easyTaskOneTwo() {
     document.body.innerHTML += taskOneHtml;
 }
 
+//All task in easy to template way
 function task(variables, expression) {
     this.variables = variables;
     this.expression = expression;
@@ -31,6 +32,13 @@ function variableValuePair(type, variable, operator, value) {
     this.value = value;
 }
 
+//Task paket for generating variables and expressions
+function taskPaket(valueVariables, difficulty, iteration) {
+    this.valueVariables = valueVariables;
+    this.difficulty = difficulty;
+    this.iteration = iteration;
+}
+
 function createTaskFirstSix(varCount, taskNumber, difficulty) {
     var valueVariables = [];
     var currentTask;
@@ -39,8 +47,11 @@ function createTaskFirstSix(varCount, taskNumber, difficulty) {
     var genFunc;
     var genFuncArg = 4;
 
-    genFunc = getCorrectRand(difficulty);
-
+    if (difficulty === 3) {
+        genFunc = getCorrectRand(difficulty - 1);
+    } else {
+        genFunc = getCorrectRand(difficulty);
+    }
 
     switch (taskNumber) {
         case 1:
@@ -50,12 +61,12 @@ function createTaskFirstSix(varCount, taskNumber, difficulty) {
         case 2:
             //variable generation
             for (var i = 0; i < varCount; i++) {
-                valueVariables.push(generateVariable(taskNumber, varCount, i, genFunc, genFuncArg));
+                valueVariables.push(generateVariable(i, genFunc, genFuncArg));
             }
 
             // expression generation
             for (var i = 0; i < varCount - 1; i++) {
-                expression += generateExpressionTaskOneTwo(taskNumber, valueVariables[i]);
+                expression += generateExpressionTaskOneTwo(new taskPaket(valueVariables[i], null, null));
             }
 
             expression += '(' + valueVariables[varCount - 1].variable + ' ' + generateBitShift() + ' ' + number + ')';
@@ -64,14 +75,15 @@ function createTaskFirstSix(varCount, taskNumber, difficulty) {
         case 4:
         case 5:
             varCount *= 2;
+
             for (var i = 0; i < varCount / 2; i++) {
-                valueVariables.push(generateVariable(1, varCount, i, genFunc, genFuncArg, null));
+                valueVariables.push(generateVariable(i, genFunc, genFuncArg));
             }
 
             for (var i = varCount / 2; i < varCount; i++) {
                 var index = varCount - i - 1;
                 var newArray = [valueVariables[index], valueVariables[index + 1]]
-                valueVariables.push(generateVariable(1, varCount, i, generateExpressionThreeToFive, taskNumber, valueVariables));
+                valueVariables.push(generateVariable(i, generateExpressionThreeToFive, new taskPaket(valueVariables, difficulty, i)));
             }
             break;
 
@@ -81,28 +93,50 @@ function createTaskFirstSix(varCount, taskNumber, difficulty) {
     return currentTask;
 }
 
+//Returns letter a-z
 function generateVariableName(number) {
     return String.fromCharCode(97 + number);
 }
 
-function generateExpressionTaskOneTwo(taskNumber, valueVariable) {
-    var simpleOpration = valueVariable.variable + ' ' + generateOperation() + ' ';
+//Returns string
+function generateExpressionTaskOneTwo(taskPaket) {
+    var simpleOpration = taskPaket.valueVariables.variable + ' ' + generateOperation() + ' ';
     return simpleOpration;
 }
 
-function generateExpressionThreeToFive(taskNumber, valueVariables) {
-    var simpleOperation = valueVariables[0].variable + ' ' + generateOperation() + ' ';
-    var number = Math.floor(Math.random() * 8);
-    var bitShiftOperation = '(' + valueVariables[1].variable + ' ' + generateBitShift() + ' ' + number + ')';
+//Returns string
+function generateExpressionThreeToFive(taskPaket) {
+    var randomNumber = Math.floor(Math.random() * 7) + 1;
+    var number;
+    var simpleOperation = taskPaket.valueVariables[0].variable + ' ' + generateOperation() + ' ';
+    if (taskPaket.difficulty === 3) {
+        number = randomNumber;
+    } else if (taskPaket.difficulty === 2) {
+        if (taskPaket.iteration % 2 === 0) {
+            number = 8;
+        } else {
+            number = Math.floor(Math.random() * 7) + 1;
+        }
+    } else if (taskPaket.difficulty === 1) {
+        if (taskPaket.iteration % 2 === 0) {
+            number = 8;
+        } else {
+            number = 4;
+        }
+    }
+
+    var bitShiftOperation = '(' + taskPaket.valueVariables[1].variable + ' ' + generateBitShift() + ' ' + number + ')';
     return simpleOperation + bitShiftOperation;
 }
 
-function generateVariable(taskNumber, variableCount, iteration, delegate, delegateArg, delegateArg2) {
-        return new variableValuePair('int', generateVariableName(iteration), ' = ', delegate(delegateArg, delegateArg2) + '<br>');
+//Retruns variable value pair class instance
+function generateVariable(iteration, delegate, delegateArgs) {
+    return new variableValuePair('int', generateVariableName(iteration), ' = ', delegate(delegateArgs) + '<br>');
 }
 
 easyTaskOneTwo();
 
+// Returns fuction pointer 
 function getCorrectRand(diff) {
     if (diff === 1) {
         return generateEasyNumber;
