@@ -4,25 +4,36 @@
     <title></title>
 </head>
 <body>
-    <button id="easy-test">Generate easy test</button> 
+    <button id="easy-test">Generate easy test</button>
     <script id="template" type="text/x-handlebars-template">
         <table style=" margin-left: auto; margin-right: auto;">
-            {{#tasks}}
+            {{#each tasks}}
+            {{#if this.addTr}}
             <tr>
-                <td style="border: 1px solid black; min-height:200px ; min-width: 150px">
+            {{/if}}
+                <td style="border: 1px solid black; min-height:200px ; min-width: 200px">
+                    {{{this.lastVar.variable}}} = ?                  .......<br />
                     {{#each this.variables}}
-                    {{{variable}}} {{{operator}}} {{{value}}}
+                    {{type}} {{{variable}}} {{{operator}}} {{{value}}}
                     {{/each}}
-
                     {{expression}}
                 </td>
-            </tr>
-            {{/tasks}}
+         {{/each}}
         </table>
     </script>
     <script src="scripts/random-generation.js"></script>
     <script src="libs/handlebars-v1.3.0.js"></script>
+    <script>
+        Handlebars.registerHelper("showTr", function (index_count, block) {
+
+            if (parseInt(index_count) % 2 === 0) {
+                return block.fn(this);
+            }
+        });
+    </script>
     <script src="libs/jQuery1.11.1.js"></script>
     <script src="scripts/simple-test-gen.js"></script>
 </body>
 </html>
+
+<!---->

@@ -92,3 +92,7 @@ function generateBitShift() {
         return '<<';
     }
 }
+
+function generateDecimalNumber(maxLen) {
+    return Math.floor(Math.random() * maxLen);
+}
