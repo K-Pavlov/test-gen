@@ -71,3 +71,24 @@ function generateEasyNumber() {
 
     return number;
 }
+
+function generateOperation() {
+    var operator = Math.floor(Math.random() * 3);
+    switch (operator) {
+        case 0:
+            return '|';
+        case 1:
+            return '&';
+        case 2:
+            return '^';
+    }
+}
+
+function generateBitShift() {
+    var shift = Math.floor(Math.random() * 2);
+    if (shift) {
+        return '>>';
+    } else {
+        return '<<';
+    }
+}
