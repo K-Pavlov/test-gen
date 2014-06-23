@@ -1,6 +1,7 @@
 ﻿/// <reference path="../libs/jQuery1.11.1.js" />
 /// <reference path="../libs/handlebars-v1.3.0.js" />
 /// <reference path="random-generation.js" />
+/// <reference path="calculate-task.js" />
 //var tasks = [];
 
 function easyTaskOneTwo(difficulty) {
@@ -8,8 +9,12 @@ function easyTaskOneTwo(difficulty) {
     var templateString = templateNode.innerHTML;
     var template = Handlebars.compile(templateString);
     var tasks = [];
-    for (var i = 1; i <= 5; i++) {
-        tasks.push(createTaskFirstFive(i, difficulty));
+    for (var i = 1; i <= 2; i++) {
+        tasks.push(createTaskOneTwo(i, difficulty));
+    }
+
+    for (var i = 3; i <= 5; i++) {
+        tasks.push(createTaskThreeFive(i, difficulty));
     }
 
     for (var i = 6; i <= 7; i++) {
@@ -25,13 +30,14 @@ function easyTaskOneTwo(difficulty) {
         tasks: tasks
     });
 
+    calculate(1, tasks[0].variables, tasks[0].lastVar);
+
     document.getElementById('output').innerHTML = taskOneHtml;
 }
 
 //All task in easy to template way
-function task(variables, expression, lastVar, addTr) {
+function task(variables, lastVar, addTr) {
     this.variables = variables;
-    this.expression = expression;
     this.lastVar = lastVar;
     this.addTr = addTr;
 }
@@ -51,7 +57,7 @@ function taskPaket(valueVariables, difficulty, iteration) {
 }
 
 //Returns task
-function createTaskFirstFive(taskNumber, difficulty) {
+function createTaskOneTwo(taskNumber, difficulty) {
     var varCount = 2;
     var valueVariables = [];
     var currentTask;
@@ -69,51 +75,65 @@ function createTaskFirstFive(taskNumber, difficulty) {
         genFunc = getCorrectRand(difficulty);
     }
 
-    switch (taskNumber) {
-        case 1:
-            if (difficulty > 1) {
-                shiftNumber = Math.floor((Math.random() * 6) + 1);
-            }
-        case 2:
-            //variable generation
-            for (var i = 0; i < varCount; i++) {
-                valueVariables.push(generateVariable(i, genFunc, genFuncArg));
-            }
-
-            // expression generation
-            for (var i = 0; i < varCount - 1; i++) {
-                expression += generateExpressionTaskOneTwo(new taskPaket(valueVariables[i], null, null));
-            }
-
-            expression += '(' + valueVariables[varCount - 1].variable + ' ' + generateBitShift() + ' ' + shiftNumber + ')';
-
-            valueVariables.push(new variableValuePair('int', generateVariableName(varCount), ' = ', expression));
-
-            expression = '';
-            break;
-        case 3:
-        case 4:
-        case 5:
-            varCount *= 2;
-            varCount;
-
-            for (var i = 0; i < varCount / 2; i++) {
-                valueVariables.push(generateVariable(i, genFunc, genFuncArg));
-            }
-
-            for (var i = varCount / 2; i < varCount; i++) {
-                var index = varCount - i - 1;
-                var newArray = [valueVariables[index], valueVariables[index + 1]]
-                valueVariables.push(generateVariable(i, generateExpressionThreeToFive, new taskPaket(valueVariables, difficulty, i)));
-            }
-
-            var newVaraiables = [valueVariables[varCount - 2], valueVariables[varCount - 1]];
-
-            valueVariables.push(generateVariable(varCount, generateExpressionTaskOneTwo, new taskPaket(newVaraiables, null, null)));
-            break;
+    if (taskNumber === 1) {
+        if (difficulty > 1) {
+            shiftNumber = Math.floor((Math.random() * 6) + 1);
+        }
     }
 
-    currentTask = new task(valueVariables, expression, valueVariables[valueVariables.length - 1], showTr);
+    //variable generation
+    for (var i = 0; i < varCount; i++) {
+        valueVariables.push(generateVariable(i, genFunc, genFuncArg));
+    }
+
+    // expression generation
+    for (var i = 0; i < varCount - 1; i++) {
+        expression += generateExpressionTaskOneTwo(new taskPaket(valueVariables[i], null, null));
+    }
+
+    expression += '(' + valueVariables[varCount - 1].variable + ' ' + generateBitShift() + ' ' + shiftNumber + ')';
+
+    valueVariables.push(new variableValuePair('int', generateVariableName(varCount), ' = ', expression));
+
+    expression = '';
+
+    currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
+    return currentTask;
+}
+
+function createTaskThreeFive(taskNumber, difficulty) {
+    var varCount = 4;
+    var valueVariables = [];
+    var currentTask;
+    var expression = '';
+    var shiftNumber = 8;
+    var genFunc;
+    var genFuncArg = 4;
+    var showTr = false;
+
+    showTr = checkTaskNumber(taskNumber);
+
+    if (difficulty === 3) {
+        genFunc = getCorrectRand(difficulty - 1);
+    } else {
+        genFunc = getCorrectRand(difficulty);
+    }
+
+    for (var i = 0; i < varCount / 2; i++) {
+        valueVariables.push(generateVariable(i, genFunc, genFuncArg));
+    }
+
+    for (var i = varCount / 2; i < varCount; i++) {
+        var index = varCount - i - 1;
+        var newArray = [valueVariables[index], valueVariables[index + 1]]
+        valueVariables.push(generateVariable(i, generateExpressionThreeToFive, new taskPaket(valueVariables, difficulty, i)));
+    }
+
+    var newVaraiables = [valueVariables[varCount - 2], valueVariables[varCount - 1]];
+
+    valueVariables.push(generateVariable(varCount, generateExpressionTaskOneTwo, new taskPaket(newVaraiables, null, null)));
+
+    currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
 }
 
@@ -127,7 +147,7 @@ function createTaskSixSeven(taskNumber, difficulty) {
     var genFunc;
     var genFuncArg = 4;
     var showTr = false;
-    
+
     showTr = checkTaskNumber(taskNumber);
 
     if (difficulty === 1) {
@@ -155,7 +175,7 @@ function createTaskSixSeven(taskNumber, difficulty) {
 
     }
 
-    currentTask = new task(valueVariables, expression, valueVariables[valueVariables.length - 1], showTr);
+    currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
 }
 
@@ -185,7 +205,7 @@ function createTaskEightTen(taskNumber, difficulty) {
 
     valueVariables.push(generateVariable(varCount - 1, generateBitShiftExpression, new taskPaket(valueVariables, 3)));
 
-    currentTask = new task(valueVariables, expression, valueVariables[valueVariables.length - 1], showTr);
+    currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
 }
 
@@ -283,5 +303,3 @@ function checkTaskNumber(taskNumber) {
         return true;
     }
 }
-
-//easyTaskOneTwo();
