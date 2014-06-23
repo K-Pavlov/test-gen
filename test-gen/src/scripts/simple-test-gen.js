@@ -9,24 +9,30 @@ function easyTaskOneTwo(difficulty) {
     var templateString = templateNode.innerHTML;
     var template = Handlebars.compile(templateString);
     var tasks = [];
+    var answers = [];
     for (var i = 1; i <= 2; i++) {
         tasks.push(createTaskOneTwo(i, difficulty));
-        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
+        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
     }
 
     for (var i = 3; i <= 5; i++) {
         tasks.push(createTaskThreeFive(i, difficulty));
-        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
+        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
     }
 
     for (var i = 6; i <= 7; i++) {
         tasks.push(createTaskSixSeven(i, difficulty));
-        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
+        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
     }
 
     for (var i = 8; i <= 10; i++) {
         tasks.push(createTaskEightTen(i, difficulty));
-        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
+        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+    }
+
+    for (var i = 11; i <= 12; i++) {
+        tasks.push(createTaskLastTwo(i, difficulty));
+        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].specialCase));
     }
 
     // var task = createTaskFirstSix(2, 1, 3);
@@ -34,16 +40,28 @@ function easyTaskOneTwo(difficulty) {
         tasks: tasks
     });
 
-    calculate(1, tasks[0].variables, tasks[0].lastVar);
+    taskOneHtml = taskOneHtml.replace(/replaceMe/g, '          ........');
+    var withoutAnswers = taskOneHtml;
 
     document.getElementById('output').innerHTML = taskOneHtml;
+
+    for (var i in tasks) {
+        taskOneHtml = taskOneHtml.replace('........', answers[i]);
+    }
+
+    var withAnswers = taskOneHtml.replace(/\?/g, ' ');
 }
 
 //All task in easy to template way
-function task(variables, lastVar, addTr) {
+function task(variables, lastVar, addTr, specialCase) {
     this.variables = variables;
     this.lastVar = lastVar;
     this.addTr = addTr;
+    this.specialCase = '';
+
+    if (specialCase) {
+        this.specialCase = specialCase;
+    }
 }
 
 function variableValuePair(type, variable, operator, value, isExpression) {
@@ -197,12 +215,14 @@ function createTaskEightTen(taskNumber, difficulty) {
     showTr = checkTaskNumber(taskNumber);
 
     if (difficulty === 1) {
-        genFuncArg = 1000;
+        genFuncArg = 500;
     } else if (difficulty === 2) {
-        genFuncArg = 2000;
+        genFuncArg = 1000;
     } else if (difficulty === 3) {
-        genFuncArg = 3000;
+        genFuncArg = 1500;
     }
+
+    genFuncArg *= 2;
 
     for (var i = 0; i < varCount - 1; i++) {
         valueVariables.push(generateVariable(i, genFunc, genFuncArg, undefined, false));
@@ -212,6 +232,51 @@ function createTaskEightTen(taskNumber, difficulty) {
 
     currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
+}
+function createTaskLastTwo(taskNumber, difficulty) {
+    var varCount = 2;
+    var valueVariables = [];
+    var currentTask;
+    var expression = '';
+    var shiftNumber = 8;
+    var genFunc;
+    var genFuncArg = 500;
+    var showTr = false;
+
+    showTr = checkTaskNumber(taskNumber);
+
+    genFunc = generateDecimalNumber;
+
+    valueVariables.push(generateVariable(0, genFunc, genFuncArg, undefined, false));
+    valueVariables.push(new variableValuePair('int', generateVariableName(1), ' = ', 0, false));
+
+    var print = generateLastExpression(valueVariables);
+    var startIndex = print.indexOf('(');
+    var endIndex = print.indexOf(')');
+
+    for (var i = startIndex + 1; i < endIndex; i++) {
+        expression += print[i];
+    }
+
+    var specialCase = {
+        expression: expression,
+        toPrint: print
+    }
+
+    currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr, specialCase);
+    return currentTask;
+}
+
+function generateLastExpression(valueVariables) {
+    var randomShiftValue = Math.floor(Math.random() * 9) + 1;
+    var string = 'if (' + valueVariables[0].variable + ' ' + generateOperation() + ' ' +
+        valueVariables[0].variable + ' ' + generateOperation() + ' ' + valueVariables[0].variable +
+        ' ' + generateBitShift() + ' ' + randomShiftValue + ')';
+    string += '<br />{<br />' + valueVariables[1].variable + ' = 1; ';
+    string += '<br />}<br/>' + 'else' + '<br />{<br />';
+    string += valueVariables[1].variable + ' = 2; ' + '<br />}<br/>';
+
+    return string;
 }
 
 //Returns letter a-z
@@ -284,12 +349,16 @@ function generateExpressionThreeToFive(taskPaket) {
 }
 
 //Retruns variable value pair class instance
-function generateVariable(iteration, delegate, delegateArgs, type, isExpression) {
+function generateVariable(iteration, delegate, delegateArgs, type, isExpression, operator) {
     if (!type) {
         type = 'int';
     }
 
-    return new variableValuePair(type, generateVariableName(iteration), ' = ', delegate(delegateArgs), isExpression);
+    if (!operator) {
+        operator = ' = '
+    }
+
+    return new variableValuePair(type, generateVariableName(iteration), operator, delegate(delegateArgs), isExpression);
 }
 
 // Returns fuction pointer 

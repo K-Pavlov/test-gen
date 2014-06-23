@@ -1,0 +1,3 @@
+﻿function generateHtmlFile(html) {
+
+}

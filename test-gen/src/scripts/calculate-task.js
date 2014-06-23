@@ -1,11 +1,27 @@
 ﻿/// <reference path="simple-test-gen.js" />
 function calculate(taskNumber, variables, expressions) {
-    if (taskNumber === 9) {
-        var result = handleExpression(variables, expressions.value);
-        console.log('MyFunc: ' + result);
+    var result;
+    if (taskNumber >= 3 && taskNumber <= 5) {
+        var c = handleExpression(variables, variables[2].value);
+        var d = handleExpression(variables, variables[3].value);
+        var toEval = variables[4].value.replace('int', 'var');
+        toEval = toEval.replace('c', c);
+        toEval = toEval.replace('d', d);
+        result = eval(toEval);
+    } else if (taskNumber === 11 || taskNumber === 12) {
+        var toEval = expressions.expression.replace(/a/g, variables[0].value);
+        var toTest = eval(toEval);
+        if (toTest) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+    else {
+        result = handleExpression(variables, expressions.value);
     }
     //console.log(expressions.value);
-    //if(result)
+    return result;
 }
 
 function handleExpression(variables, expression) {
@@ -90,7 +106,7 @@ function calculateStack(stack) {
             if (variable === '(') {
                 var smallerStack = [];
 
-                while(!(variable === ')')) {
+                while (!(variable === ')')) {
                     variable = stack.shift();
                     smallerStack.push(variable);
                 }

@@ -15,11 +15,11 @@
                 {{/if}}
                 <td style="border: 1px solid black; min-height:200px ; min-width: 200px">
                     {{@index}} <br />
-                    {{{this.lastVar.variable}}} = ?                  .......<br />
+                    {{{this.lastVar.variable}}} = ?                  replaceMe<br />
                     {{#each this.variables}}
                     {{type}} {{{variable}}} {{{operator}}} {{{value}}}; <br />
                     {{/each}}
-                    {{expression}}
+                    {{{specialCase.toPrint}}}
                 </td>
                 {{/each}}
         </table>
@@ -44,6 +44,7 @@
 
         easyButton.addEventListener('click', function () {
             easyTaskOneTwo(1);
+            //  easyTaskOneTwo(1);
         }, false);
 
         mediumButton.addEventListener('click', function () {
@@ -61,3 +62,4 @@
 </html>
 
 <!---->
+
