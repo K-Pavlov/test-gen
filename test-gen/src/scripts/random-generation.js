@@ -94,5 +94,7 @@ function generateBitShift() {
 }
 
 function generateDecimalNumber(maxLen) {
-    return Math.floor(Math.random() * maxLen);
+    var number;
+    while (!(number = Math.floor(Math.random() * maxLen) + 500));
+    return number;
 }

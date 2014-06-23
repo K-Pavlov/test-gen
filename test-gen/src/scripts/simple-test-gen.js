@@ -11,18 +11,22 @@ function easyTaskOneTwo(difficulty) {
     var tasks = [];
     for (var i = 1; i <= 2; i++) {
         tasks.push(createTaskOneTwo(i, difficulty));
+        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
     }
 
     for (var i = 3; i <= 5; i++) {
         tasks.push(createTaskThreeFive(i, difficulty));
+        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
     }
 
     for (var i = 6; i <= 7; i++) {
         tasks.push(createTaskSixSeven(i, difficulty));
+        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
     }
 
     for (var i = 8; i <= 10; i++) {
         tasks.push(createTaskEightTen(i, difficulty));
+        calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar);
     }
 
     // var task = createTaskFirstSix(2, 1, 3);
@@ -42,11 +46,12 @@ function task(variables, lastVar, addTr) {
     this.addTr = addTr;
 }
 
-function variableValuePair(type, variable, operator, value) {
+function variableValuePair(type, variable, operator, value, isExpression) {
     this.type = type;
     this.variable = variable;
     this.operator = operator;
     this.value = value;
+    this.isExpression = isExpression;
 }
 
 //Task paket for generating variables and expressions
@@ -83,7 +88,7 @@ function createTaskOneTwo(taskNumber, difficulty) {
 
     //variable generation
     for (var i = 0; i < varCount; i++) {
-        valueVariables.push(generateVariable(i, genFunc, genFuncArg));
+        valueVariables.push(generateVariable(i, genFunc, genFuncArg, undefined, false));
     }
 
     // expression generation
@@ -93,7 +98,7 @@ function createTaskOneTwo(taskNumber, difficulty) {
 
     expression += '(' + valueVariables[varCount - 1].variable + ' ' + generateBitShift() + ' ' + shiftNumber + ')';
 
-    valueVariables.push(new variableValuePair('int', generateVariableName(varCount), ' = ', expression));
+    valueVariables.push(new variableValuePair('int', generateVariableName(varCount), ' = ', expression, true));
 
     expression = '';
 
@@ -120,18 +125,18 @@ function createTaskThreeFive(taskNumber, difficulty) {
     }
 
     for (var i = 0; i < varCount / 2; i++) {
-        valueVariables.push(generateVariable(i, genFunc, genFuncArg));
+        valueVariables.push(generateVariable(i, genFunc, genFuncArg, undefined, false));
     }
 
     for (var i = varCount / 2; i < varCount; i++) {
         var index = varCount - i - 1;
         var newArray = [valueVariables[index], valueVariables[index + 1]]
-        valueVariables.push(generateVariable(i, generateExpressionThreeToFive, new taskPaket(valueVariables, difficulty, i)));
+        valueVariables.push(generateVariable(i, generateExpressionThreeToFive, new taskPaket(valueVariables, difficulty, i), undefined, true));
     }
 
     var newVaraiables = [valueVariables[varCount - 2], valueVariables[varCount - 1]];
 
-    valueVariables.push(generateVariable(varCount, generateExpressionTaskOneTwo, new taskPaket(newVaraiables, null, null)));
+    valueVariables.push(generateVariable(varCount, generateExpressionTaskOneTwo, new taskPaket(newVaraiables, null, null), undefined, true));
 
     currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
@@ -161,16 +166,16 @@ function createTaskSixSeven(taskNumber, difficulty) {
     }
 
     if (taskNumber === 6) {
-        valueVariables.push(generateVariable(0, genFunc, genFuncArg));
-        valueVariables.push(generateVariable(1, generateBitShiftExpression, new taskPaket(valueVariables)));
+        valueVariables.push(generateVariable(0, genFunc, genFuncArg, undefined, false));
+        valueVariables.push(generateVariable(1, generateBitShiftExpression, new taskPaket(valueVariables), undefined, true));
     } else if (taskNumber === 7) {
         genFuncArg = 8;
 
         for (var i = 0; i < varCount; i++) {
-            valueVariables.push(generateVariable(i, genFunc, genFuncArg, 'long'));
+            valueVariables.push(generateVariable(i, genFunc, genFuncArg, 'long', false));
         }
 
-        valueVariables.push(generateVariable(varCount, generateBitShiftExpression, new taskPaket(valueVariables, difficulty)));
+        valueVariables.push(generateVariable(varCount, generateBitShiftExpression, new taskPaket(valueVariables, difficulty), undefined, true));
     } else if (taskNumber === 8) {
 
     }
@@ -200,10 +205,10 @@ function createTaskEightTen(taskNumber, difficulty) {
     }
 
     for (var i = 0; i < varCount - 1; i++) {
-        valueVariables.push(generateVariable(i, genFunc, genFuncArg));
+        valueVariables.push(generateVariable(i, genFunc, genFuncArg, undefined, false));
     }
 
-    valueVariables.push(generateVariable(varCount - 1, generateBitShiftExpression, new taskPaket(valueVariables, 3)));
+    valueVariables.push(generateVariable(varCount - 1, generateBitShiftExpression, new taskPaket(valueVariables, 3), undefined, true));
 
     currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
@@ -222,8 +227,8 @@ function generateBitShiftExpression(taskPaket) {
         bitShiftValue = 8;
         bitShiftSecondVal = 8;
     } else {
-        bitShiftSecondVal = Math.floor(Math.random() * 10) + 1;
-        bitShiftValue = Math.floor(Math.random() * 10) + 1;
+        bitShiftSecondVal = Math.floor(Math.random() * 9) + 1;
+        bitShiftValue = Math.floor(Math.random() * 9) + 1;
     }
 
     if (taskPaket.valueVariables.length === 1) {
@@ -279,12 +284,12 @@ function generateExpressionThreeToFive(taskPaket) {
 }
 
 //Retruns variable value pair class instance
-function generateVariable(iteration, delegate, delegateArgs, type) {
+function generateVariable(iteration, delegate, delegateArgs, type, isExpression) {
     if (!type) {
         type = 'int';
     }
 
-    return new variableValuePair(type, generateVariableName(iteration), ' = ', delegate(delegateArgs) + '<br>');
+    return new variableValuePair(type, generateVariableName(iteration), ' = ', delegate(delegateArgs), isExpression);
 }
 
 // Returns fuction pointer 

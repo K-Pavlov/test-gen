@@ -1,11 +1,11 @@
 ﻿/// <reference path="simple-test-gen.js" />
-function calculate(taskNumber, variables, lastVariable) {
-    if (taskNumber === 1 || taskNumber === 2) {
-        var result = handleExpression(variables, lastVariable.value);
-        console.log(result);
-    } else if (taskNumber >= 8 || taskNumber <= 10) {
-
+function calculate(taskNumber, variables, expressions) {
+    if (taskNumber === 9) {
+        var result = handleExpression(variables, expressions.value);
+        console.log('MyFunc: ' + result);
     }
+    //console.log(expressions.value);
+    //if(result)
 }
 
 function handleExpression(variables, expression) {
@@ -63,14 +63,14 @@ function doOperation(a, b, operation) {
     } else if (operation === '<<') {
         return a << b;
     } else if (operation === '>>') {
-        return a >> b;
+        return a >>> b;
     }
 }
 
 function checkVariableName(currentVar, allVars) {
     for (var i in allVars) {
         if (currentVar === allVars[i].variable) {
-            return parseInt(allVars[i].value.split('<')[0]);
+            return parseInt(allVars[i].value);
         }
     }
 
@@ -88,12 +88,11 @@ function calculateStack(stack) {
         var variable = stack.shift();
         if (checkOperator(variable)) {
             if (variable === '(') {
-                var startBrackIndex = stack.indexOf('(');
-                var closingBracketIndex = stack.indexOf(')');
                 var smallerStack = [];
 
-                for (var i = startBrackIndex; i < closingBracketIndex - 1; i++) {
-                    smallerStack.push(stack.shift());
+                while(!(variable === ')')) {
+                    variable = stack.shift();
+                    smallerStack.push(variable);
                 }
 
                 if (firstValue) {
