@@ -93,6 +93,7 @@ function checkVariableName(currentVar, allVars) {
     return false;
 }
 
+//Reverse polish notation. Because.
 function calculateStack(stack) {
     var operator;
     var brace;

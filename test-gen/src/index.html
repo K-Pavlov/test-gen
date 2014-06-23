@@ -7,6 +7,8 @@
     <button id="easy-test">Generate easy test</button>
     <button id="medium-test">Generate moderate test</button>
     <button id="hard-test">Generate hard test</button>
+    <input type="text" placeholder="test count" value="" id="test-count" />
+    <div id="error"></div>
     <script id="template" type="text/x-handlebars-template">
         <table style=" margin-left: auto; margin-right: auto;">
             {{#each tasks}}
@@ -17,7 +19,7 @@
                     {{@index}} <br />
                     {{{this.lastVar.variable}}} = ?                  replaceMe<br />
                     {{#each this.variables}}
-                    {{type}} {{{variable}}} {{{operator}}} {{{value}}}; <br />
+                        {{type}} {{{variable}}} {{{operator}}} {{{value}}}; <br />
                     {{/each}}
                     {{{specialCase.toPrint}}}
                 </td>
@@ -35,25 +37,61 @@
             }
         });
     </script>
-    <script src="libs/jQuery1.11.1.js"></script>
+    <script src="libs/FileSaver.js"></script>
+    <script src="libs/jszip.min.js"></script>
+    <script src="scripts/generateFile.js"></script>
     <script src="scripts/simple-test-gen.js"></script>
     <script>
         var easyButton = document.getElementById('easy-test');
         var mediumButton = document.getElementById('medium-test');
         var hardButton = document.getElementById('hard-test');
 
+
         easyButton.addEventListener('click', function () {
-            easyTaskOneTwo(1);
-            //  easyTaskOneTwo(1);
+            var testCount = getTestCount();
+
+            if (!testCount) {
+                return;
+            }
+
+            easyTaskOneTwo(1, testCount);
         }, false);
 
         mediumButton.addEventListener('click', function () {
-            easyTaskOneTwo(2);
+            var testCount = getTestCount();
+
+            if (!testCount) {
+                return;
+            }
+
+            easyTaskOneTwo(2, testCount);
         }, false);
 
         hardButton.addEventListener('click', function () {
-            easyTaskOneTwo(3);
+            var testCount = getTestCount();
+
+            if (!testCount) {
+                return;
+            }
+
+            easyTaskOneTwo(3, testCount);
         }, false);
+
+        function getTestCount() {
+            var getInput = document.getElementById('test-count');
+            var testCount = parseInt(getInput.value);
+            var errorDiv = document.getElementById('error');
+
+            getInput.value = '';
+
+            if (isNaN(testCount)) {
+                errorDiv.innerHTML = 'Please enter a valid number';
+                return false;
+            }
+
+            errorDiv.innerHTML = '';
+            return testCount;
+        }
     </script>
     <div id="output">
 

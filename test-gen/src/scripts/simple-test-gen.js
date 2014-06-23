@@ -1,55 +1,68 @@
-﻿/// <reference path="../libs/jQuery1.11.1.js" />
-/// <reference path="../libs/handlebars-v1.3.0.js" />
+﻿/// <reference path="../libs/handlebars-v1.3.0.js" />
 /// <reference path="random-generation.js" />
 /// <reference path="calculate-task.js" />
+/// <reference path="generateFile.js" />
 //var tasks = [];
 
-function easyTaskOneTwo(difficulty) {
-    var templateNode = document.getElementById('template');
-    var templateString = templateNode.innerHTML;
-    var template = Handlebars.compile(templateString);
-    var tasks = [];
-    var answers = [];
-    for (var i = 1; i <= 2; i++) {
-        tasks.push(createTaskOneTwo(i, difficulty));
-        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+function easyTaskOneTwo(difficulty, testCount) {
+    var times = testCount;
+    var filesWithAnswers = [];
+    var filesWithoutAnswers = [];
+    for (var j = 0; j < times; j++) {
+        var templateNode = document.getElementById('template');
+        var templateString = templateNode.innerHTML;
+        var template = Handlebars.compile(templateString);
+        var tasks = [];
+        var answers = [];
+        for (var i = 1; i <= 2; i++) {
+            tasks.push(createTaskOneTwo(i, difficulty));
+            answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+        }
+
+        for (var i = 3; i <= 5; i++) {
+            tasks.push(createTaskThreeFive(i, difficulty));
+            answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+        }
+
+        for (var i = 6; i <= 7; i++) {
+            tasks.push(createTaskSixSeven(i, difficulty));
+            answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+        }
+
+        for (var i = 8; i <= 10; i++) {
+            tasks.push(createTaskEightTen(i, difficulty));
+            answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
+        }
+
+        for (var i = 11; i <= 12; i++) {
+            tasks.push(createTaskLastTwo(i, difficulty));
+            answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].specialCase));
+        }
+
+        // var task = createTaskFirstSix(2, 1, 3);
+        var taskOneHtml = template({
+            tasks: tasks
+        });
+
+        taskOneHtml = taskOneHtml.replace(/replaceMe/g, '          ........');
+        var withoutAnswers = taskOneHtml;
+
+        for (var i in tasks) {
+            taskOneHtml = taskOneHtml.replace('........', answers[i]);
+        }
+
+        var withAnswers = taskOneHtml.replace(/\?/g, ' ');
+        var testNumber = parseInt(j) + 1;
+        filesWithAnswers.push(new file('test_without_answers' + testNumber + '.html', withoutAnswers));
+        filesWithoutAnswers.push(new file('test_with_answers' + testNumber + '.html', withAnswers));
     }
 
-    for (var i = 3; i <= 5; i++) {
-        tasks.push(createTaskThreeFive(i, difficulty));
-        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
-    }
+    generateHtmlFile(filesWithAnswers, filesWithoutAnswers);
+}
 
-    for (var i = 6; i <= 7; i++) {
-        tasks.push(createTaskSixSeven(i, difficulty));
-        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
-    }
-
-    for (var i = 8; i <= 10; i++) {
-        tasks.push(createTaskEightTen(i, difficulty));
-        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].lastVar));
-    }
-
-    for (var i = 11; i <= 12; i++) {
-        tasks.push(createTaskLastTwo(i, difficulty));
-        answers.push(calculate(i, tasks[i - 1].variables, tasks[i - 1].specialCase));
-    }
-
-    // var task = createTaskFirstSix(2, 1, 3);
-    var taskOneHtml = template({
-        tasks: tasks
-    });
-
-    taskOneHtml = taskOneHtml.replace(/replaceMe/g, '          ........');
-    var withoutAnswers = taskOneHtml;
-
-    document.getElementById('output').innerHTML = taskOneHtml;
-
-    for (var i in tasks) {
-        taskOneHtml = taskOneHtml.replace('........', answers[i]);
-    }
-
-    var withAnswers = taskOneHtml.replace(/\?/g, ' ');
+function file(name, html) {
+    this.name = name;
+    this.html = html;
 }
 
 //All task in easy to template way
@@ -233,6 +246,7 @@ function createTaskEightTen(taskNumber, difficulty) {
     currentTask = new task(valueVariables, valueVariables[valueVariables.length - 1], showTr);
     return currentTask;
 }
+
 function createTaskLastTwo(taskNumber, difficulty) {
     var varCount = 2;
     var valueVariables = [];
