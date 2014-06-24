@@ -5,23 +5,30 @@ function calculate(taskNumber, variables, expressions) {
         var c = handleExpression(variables, variables[2].value);
         var d = handleExpression(variables, variables[3].value);
         var toEval = variables[4].value.replace('int', 'var');
-        toEval = toEval.replace('c', c);
-        toEval = toEval.replace('d', d);
-        result = eval(toEval);
-    } else if (taskNumber === 11 || taskNumber === 12) {
-        var toEval = expressions.expression.replace(/a/g, variables[0].value);
-        var toTest = eval(toEval);
-        if (toTest) {
-            return 1;
+        if (c && d) {
+            toEval = toEval.replace('c', c);
+            toEval = toEval.replace('d', d);
+            result = eval(toEval);
         } else {
-            return 2;
+            result = generateMediumNumber(4);
         }
-    }
-    else {
+    } else if (taskNumber === 11 || taskNumber === 12) {
+        if (variables[0]) {
+            var toEval = expressions.expression.replace(/a/g, variables[0].value);
+            var toTest = eval(toEval);
+            if (toTest) {
+                return 1;
+            } else {
+                return 2;
+            }
+        } else {
+            result = generateMediumNumber(4);
+        }
+    } else {
         result = handleExpression(variables, expressions.value);
     }
     //console.log(expressions.value);
-    return result;
+    return '0x' + result.toString(16);
 }
 
 function handleExpression(variables, expression) {

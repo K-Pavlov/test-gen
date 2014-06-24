@@ -73,9 +73,9 @@ function generateText(tasks, answers) {
         currTaskText = 'Task number ' + (i + 1) + '\n';
 
         if (!answers) {
-            currTaskText += tasks[i].lastVar.variable + '      ......' + '\n';
+            currTaskText += tasks[i].lastVar.variable + ' = ?' + '                               ......' + '\n';
         } else {
-            currTaskText += tasks[i].lastVar.variable + '      ' + answers[i] + '\n';
+            currTaskText += tasks[i].lastVar.variable + '                               ' + answers[i] + '\n';
         }
 
         for (var j = 0; j < tasks[i].variables.length; j++) {
