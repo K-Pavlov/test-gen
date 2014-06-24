@@ -53,21 +53,54 @@ function easyTaskOneTwo(difficulty, testCount) {
 
         var withAnswers = taskOneHtml.replace(/\?/g, ' ');
         var testNumber = parseInt(j) + 1;
-        var withAnswerName = 'test_without_answers' + testNumber;
-        var withoutAnswersName = 'test_with_answers' + testNumber;
-        filesWithAnswers.push(new file(withAnswerName + '.html', withAnswerName + '.pdf', withoutAnswers));
-        filesWithoutAnswers.push(new file(withoutAnswersName + '.html', withoutAnswersName +'.pdf' , withAnswers));
+        var withoutAnswersText = generateText(tasks);
+        var withAnswersText = generateText(tasks, answers);
+        var withAnswerName = 'test_with_answers' + testNumber;
+        var withoutAnswersName = 'test_without_answers' + testNumber;
+        filesWithAnswers.push(new file(withAnswerName + '.html', withAnswerName + '.pdf', withAnswers, withAnswersText));
+        filesWithoutAnswers.push(new file(withoutAnswersName + '.html', withoutAnswersName + '.pdf', withoutAnswers, withoutAnswersText));
     }
 
     generateHtmlFile(filesWithAnswers, filesWithoutAnswers);
 }
 
-function file(htmlName, pdfName, html) {
+function generateText(tasks, answers) {
+    var currTaskText;
+
+    var allTasks = [];
+    var currVariable;
+    for (var i = 0; i < 12; i++) {
+        if (answers) {
+            currTaskText = 'Task number ' + (i + 1) + '      ' + answers[i] + '\n';
+        } else {
+            currTaskText = 'Task number ' + (i + 1) + '      ......' + '\n'
+        }
+
+        currTaskText += tasks[i].lastVar.variable + '\n';
+        
+        for (var j = 0; j < tasks[i].variables.length; j++) {
+            currVariable = tasks[i].variables[j];
+            currTaskText += currVariable.type + currVariable.variable + currVariable.operator + currVariable.value + '\n';
+        }
+
+        if (tasks[i].specialCase !== '') {
+            currTaskText += tasks[i].specialCase.toPrint.replace(/<br \/>/g, '\n');
+        }
+        
+        allTasks.push(currTaskText);
+    }
+
+    //console.log(allTasks);
+    return allTasks;
+}
+
+function file(htmlName, pdfName, html, text) {
     this.html = '<!DOCTYPE html><html><body>'
     this.htmlName = htmlName;
     this.pdfName = pdfName;
     this.html += html;
     this.html += '</body></html>';
+    this.plainText = text;
 }
 
 //All task in easy to template way
@@ -292,8 +325,8 @@ function generateLastExpression(valueVariables) {
         valueVariables[0].variable + ' ' + generateOperation() + ' ' + valueVariables[0].variable +
         ' ' + generateBitShift() + ' ' + randomShiftValue + ')';
     string += '<br />{<br />' + valueVariables[1].variable + ' = 1; ';
-    string += '<br />}<br/>' + 'else' + '<br />{<br />';
-    string += valueVariables[1].variable + ' = 2; ' + '<br />}<br/>';
+    string += '<br />}<br />' + 'else' + '<br />{<br />';
+    string += valueVariables[1].variable + ' = 2; ' + '<br />}<br />';
 
     return string;
 }

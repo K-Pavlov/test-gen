@@ -11,8 +11,8 @@ function generateHtmlFile(withAnswers, withoutAnswers) {
     for (var i in withAnswers) {
         folderNoAnswers.file(withoutAnswers[i].htmlName, withoutAnswers[i].html);
         folderAnswers.file(withAnswers[i].htmlName, withAnswers[i].html);
-        pdfNoAnswersData = generatePDF(withoutAnswers[i].html).output('arraybuffer');
-        pdfAnswersData = generatePDF(withAnswers[i].html).output('arraybuffer');
+        pdfNoAnswersData = generatePDF(withoutAnswers[i].plainText).output('arraybuffer');
+        pdfAnswersData = generatePDF(withAnswers[i].plainText).output('arraybuffer');
         pdfNoAnswersFolder.file(withoutAnswers[i].pdfName, pdfNoAnswersData, { base64: true });
         pdfAnswersFolder.file(withAnswers[i].pdfName, pdfAnswersData, { base64: true });
     }
@@ -22,22 +22,25 @@ function generateHtmlFile(withAnswers, withoutAnswers) {
     saveAs(content, 'tests.zip');
 }
 
-function generatePDF(html) {
+function generatePDF(texts) {
     var doc = new jsPDF();
+    var zip = new JSZip();
+    var currentPosY;
+    var currentPosX = 50;
+    var width = 50;
+    var height = 50;
 
-    // We'll make our own renderer to skip this editor
-    var specialElementHandlers = {
-        '#editor': function (element, renderer) {
-            return true;
+    doc.setFontSize(12);
+    for (var i = 0; i < texts.length; i++) {
+        if (i % 2 === 0) {
+            currentPosY = i * 25;
+            doc.rect(currentPosX, currentPosY, width, height);
+            doc.text(currentPosX + 1, currentPosY + 10, texts[i]);
+        } else {
+            doc.rect(currentPosX * 2, currentPosY, width, height);
+            doc.text(currentPosX * 2 + 1, currentPosY + 10, texts[i]);
         }
-    };
-
-    // All units are in the set measurement for the document
-    // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
-    doc.fromHTML(html, 0, 0, {
-        'width': 170,
-        'elementHandlers': specialElementHandlers
-    });
+    }
 
     return doc;
 }
