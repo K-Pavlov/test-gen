@@ -26,22 +26,14 @@
                 {{/each}}
         </table>
     </script>
-    <script src="scripts/calculate-task.js"></script>
-    <script src="scripts/random-generation.js"></script>
-    <script src="libs/handlebars-v1.3.0.js"></script>
-    <script>
-        Handlebars.registerHelper("showTr", function (index_count, block) {
-
-            if (parseInt(index_count) % 2 === 0) {
-                return block.fn(this);
-            }
-        });
-    </script>
-    <script src="libs/jspdf.min.js"></script>
-    <script src="libs/FileSaver.js"></script>
-    <script src="libs/jszip.min.js"></script>
-    <script src="scripts/generateFile.js"></script>
-    <script src="scripts/simple-test-gen.js"></script>
+    <script src="src/scripts/calculate-task.js"></script>
+    <script src="src/scripts/random-generation.js"></script>
+    <script src="src/libs/handlebars-v1.3.0.js"></script>
+    <script src="src/libs/jspdf.min.js"></script>
+    <script src="src/libs/FileSaver.js"></script>
+    <script src="src/libs/jszip.min.js"></script>
+    <script src="src/scripts/generateFile.js"></script>
+    <script src="src/scripts/simple-test-gen.js"></script>
     <script>
         var easyButton = document.getElementById('easy-test');
         var mediumButton = document.getElementById('medium-test');

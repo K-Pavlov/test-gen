@@ -26,19 +26,32 @@ function generatePDF(texts) {
     var doc = new jsPDF();
     var zip = new JSZip();
     var currentPosY;
-    var currentPosX = 50;
-    var width = 50;
+    var currentPosX = 37.5;
+    var width = 75;
     var height = 50;
 
     doc.setFontSize(12);
-    for (var i = 0; i < texts.length; i++) {
+    for (var i = 0; i < texts.length - 2; i++) {
         if (i % 2 === 0) {
             currentPosY = i * 25;
             doc.rect(currentPosX, currentPosY, width, height);
             doc.text(currentPosX + 1, currentPosY + 10, texts[i]);
         } else {
-            doc.rect(currentPosX * 2, currentPosY, width, height);
-            doc.text(currentPosX * 2 + 1, currentPosY + 10, texts[i]);
+            doc.rect(currentPosX + width, currentPosY, width, height);
+            doc.text(currentPosX + width + 1, currentPosY + 10, texts[i]);
+        }
+    }
+
+    doc.addPage();
+
+    for (var i = 0; i < 2; i++) {
+        if (i % 2 === 0) {
+            currentPosY = i * 25;
+            doc.rect(currentPosX, currentPosY, width, height + height/3);
+            doc.text(currentPosX + 1, currentPosY + 10, texts[i + 10]);
+        } else {
+            doc.rect(currentPosX + width, currentPosY, width, height + height/3);
+            doc.text(currentPosX + width + 1, currentPosY + 10, texts[i + 10]);
         }
     }
 

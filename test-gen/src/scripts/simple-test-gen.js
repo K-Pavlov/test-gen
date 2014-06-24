@@ -70,23 +70,23 @@ function generateText(tasks, answers) {
     var allTasks = [];
     var currVariable;
     for (var i = 0; i < 12; i++) {
-        if (answers) {
-            currTaskText = 'Task number ' + (i + 1) + '      ' + answers[i] + '\n';
+        currTaskText = 'Task number ' + (i + 1) + '\n';
+
+        if (!answers) {
+            currTaskText += tasks[i].lastVar.variable + '      ......' + '\n';
         } else {
-            currTaskText = 'Task number ' + (i + 1) + '      ......' + '\n'
+            currTaskText += tasks[i].lastVar.variable + '      ' + answers[i] + '\n';
         }
 
-        currTaskText += tasks[i].lastVar.variable + '\n';
-        
         for (var j = 0; j < tasks[i].variables.length; j++) {
             currVariable = tasks[i].variables[j];
-            currTaskText += currVariable.type + currVariable.variable + currVariable.operator + currVariable.value + '\n';
+            currTaskText += currVariable.type + ' ' + currVariable.variable + currVariable.operator + currVariable.value + '\n';
         }
 
         if (tasks[i].specialCase !== '') {
             currTaskText += tasks[i].specialCase.toPrint.replace(/<br \/>/g, '\n');
         }
-        
+
         allTasks.push(currTaskText);
     }
 
