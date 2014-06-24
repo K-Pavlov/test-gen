@@ -53,16 +53,21 @@ function easyTaskOneTwo(difficulty, testCount) {
 
         var withAnswers = taskOneHtml.replace(/\?/g, ' ');
         var testNumber = parseInt(j) + 1;
-        filesWithAnswers.push(new file('test_without_answers' + testNumber + '.html', withoutAnswers));
-        filesWithoutAnswers.push(new file('test_with_answers' + testNumber + '.html', withAnswers));
+        var withAnswerName = 'test_without_answers' + testNumber;
+        var withoutAnswersName = 'test_with_answers' + testNumber;
+        filesWithAnswers.push(new file(withAnswerName + '.html', withAnswerName + '.pdf', withoutAnswers));
+        filesWithoutAnswers.push(new file(withoutAnswersName + '.html', withoutAnswersName +'.pdf' , withAnswers));
     }
 
     generateHtmlFile(filesWithAnswers, filesWithoutAnswers);
 }
 
-function file(name, html) {
-    this.name = name;
-    this.html = html;
+function file(htmlName, pdfName, html) {
+    this.html = '<!DOCTYPE html><html><body>'
+    this.htmlName = htmlName;
+    this.pdfName = pdfName;
+    this.html += html;
+    this.html += '</body></html>';
 }
 
 //All task in easy to template way
