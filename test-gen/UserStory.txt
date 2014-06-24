@@ -1,0 +1,10 @@
+High priority:
+    bitwise operations 
+    Making a template
+    Generating HTML and PDF files
+Medium priority:
+    Generating well ordered .zip files
+    Selecting test difficulty
+Low priority:
+    Making a perspicuous for users interface
+    
