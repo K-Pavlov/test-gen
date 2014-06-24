@@ -4,10 +4,16 @@
     <title></title>
 </head>
 <body>
-    <button id="easy-test">Generate easy test</button>
-    <button id="medium-test">Generate moderate test</button>
-    <button id="hard-test">Generate hard test</button>
-    <input type="text" placeholder="test count" value="" id="test-count" />
+    <div id="buttons" style="margin: 0 auto; padding-top: 250px; padding-left: 200px;">
+        <button id="easy-test" style="color:yellow; background-color: black;">Generate easy test</button>
+        <button id="medium-test" style="color: orange; background-color: black;">Generate moderate test</button>
+        <button id="hard-test" style="color: red; background-color: black;">Generate hard test</button>
+    </div>
+
+    <div id="input-test-val" style="margin: 0 auto; padding-left: 200px;">
+        <input type="text" placeholder="How many test to generate" value="" id="test-count" />
+    </div>
+
     <div id="error"></div>
     <script id="template" type="text/x-handlebars-template">
         <h1 style="text-align: center">Technological school Electronical systems</h1>
@@ -21,7 +27,7 @@
                     Task number: {{@index}} <br />
                     {{{this.lastVar.variable}}} = ?                  replaceMe<br />
                     {{#each this.variables}}
-                        {{type}} {{{variable}}} {{{operator}}} {{{value}}}; <br />
+                    {{type}} {{{variable}}} {{{operator}}} {{{value}}}; <br />
                     {{/each}}
                     {{{specialCase.toPrint}}}
                 </td>
@@ -95,4 +101,3 @@
 </html>
 
 <!---->
-

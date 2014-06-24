@@ -10,7 +10,7 @@ function calculate(taskNumber, variables, expressions) {
             toEval = toEval.replace('d', d);
             result = eval(toEval);
         } else {
-            result = generateMediumNumber(4);
+            return generateMediumNumber(4);
         }
     } else if (taskNumber === 11 || taskNumber === 12) {
         if (variables[0]) {
@@ -22,12 +22,16 @@ function calculate(taskNumber, variables, expressions) {
                 return 2;
             }
         } else {
-            result = generateMediumNumber(4);
+            return generateMediumNumber(4);
         }
     } else {
         result = handleExpression(variables, expressions.value);
     }
     //console.log(expressions.value);
+    if (result === undefined) {
+        return generateMediumNumber(4);
+    }
+
     return '0x' + result.toString(16);
 }
 
